@@ -399,16 +399,20 @@ function buildSpecialPoints() {
         x: Math.cos(radians),
         y: -Math.sin(radians),
       };
-      const tangent = {
-        x: -Math.sin(radians),
-        y: -Math.cos(radians),
-      };
       const degreePoint = {
-        x: point.x + radial.x * 20 + tangent.x * 60,
-        y: point.y + radial.y * 20 + tangent.y * 60,
+        x: point.x + radial.x * 48,
+        y: point.y + radial.y * 48,
       };
       const coordinatePoint = {
-        x: Math.max(100, Math.min(800, point.x + radial.x * 125)),
+        x: Math.max(
+          100,
+          Math.min(
+            800,
+            point.x +
+              radial.x * 125 +
+              (angle === 90 || angle === 270 ? 115 : 0),
+          ),
+        ),
         y: Math.max(35, Math.min(545, point.y + radial.y * 125)),
       };
       const group = makeSvgElement("g", {
