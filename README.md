@@ -13,6 +13,7 @@ The prototype lets a student:
 - render radicals consistently from LaTeX with a full vinculum and stacked fractions;
 - pre-render exact point coordinates so snap-point labels update immediately;
 - render approximate point coordinates with the same LaTeX typography;
+- render both current-angle measures with LaTeX in a fixed-height readout;
 - reach every quadrantal, 30°, 45°, and 60° special angle in one pass;
 - switch the circle and jump controls between degree and radian labels;
 - preserve clockwise direction as negative degree and radian angle measures;

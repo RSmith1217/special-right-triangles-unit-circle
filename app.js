@@ -266,7 +266,9 @@ function latexAtom(value) {
     const coefficient = radicalMatch[1] || "";
     return `${coefficient}\\sqrt{${radicalMatch[2]}}`;
   }
-  return value.replaceAll("π", "\\pi");
+  return value
+    .replaceAll("π", "\\pi")
+    .replace(/(\d+(?:\.\d+)?)°/g, "$1^{\\circ}");
 }
 
 function latexBody(value) {
@@ -668,8 +670,8 @@ function updateSpecialPoints() {
 
 function updateValues() {
   const values = currentValues();
-  output.degree.textContent = values.degree;
-  output.radian.innerHTML = mathMarkup(values.radian);
+  renderMathValue(output.degree, values.degree, { forceLatex: true });
+  renderMathValue(output.radian, values.radian, { forceLatex: true });
   output.quadrant.textContent = values.position.name;
   output.quadrantValue.textContent = values.position.roman;
   output.referenceDegree.textContent = values.referenceDegree;

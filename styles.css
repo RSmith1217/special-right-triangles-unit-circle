@@ -648,22 +648,34 @@ h1 {
 }
 
 .angle-heading {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   height: 128px;
+  min-height: 128px;
+  max-height: 128px;
+  overflow: hidden;
   align-items: start;
-  justify-content: space-between;
   gap: 16px;
   padding: 22px 0;
   border-bottom: 1px solid #e5e8ec;
 }
 
+.angle-readout {
+  min-width: 0;
+}
+
 .angle-value {
   display: flex;
-  align-items: baseline;
+  height: 66px;
+  align-items: center;
   gap: 12px;
+  overflow: hidden;
 }
 
 #degreeValue {
+  display: inline-flex;
+  height: 62px;
+  align-items: center;
   font-family: Georgia, serif;
   font-size: 3.15rem;
   line-height: 1;
@@ -671,9 +683,24 @@ h1 {
 }
 
 #radianValue {
+  display: inline-flex;
+  height: 62px;
+  align-items: center;
   color: var(--muted);
   font-family: Georgia, serif;
   font-size: 1.2rem;
+}
+
+#degreeValue mjx-container,
+#radianValue mjx-container {
+  margin: 0 !important;
+}
+
+#degreeValue mjx-container svg,
+#radianValue mjx-container svg {
+  display: block;
+  max-width: 100%;
+  overflow: visible;
 }
 
 .angle-value.show-radians {
@@ -683,7 +710,7 @@ h1 {
 
 .angle-value.show-radians #radianValue {
   color: var(--ink);
-  font-size: 2.35rem;
+  font-size: 1.75rem;
   line-height: 1;
   letter-spacing: -0.04em;
 }
@@ -1285,6 +1312,8 @@ h1 {
 
   .angle-heading {
     height: 112px;
+    min-height: 112px;
+    max-height: 112px;
     align-items: center;
   }
 
