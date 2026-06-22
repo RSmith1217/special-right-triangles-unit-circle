@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Explore exact trigonometric values by dragging a 45-45-90 triangle into the unit circle."
+    />
+    <title>Special Triangles on the Unit Circle</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="hero">
+        <div class="hero-title">
+          <p class="eyebrow">Geometry you can move</p>
+          <h1>Explore the unit circle<br />with one moving triangle.</h1>
+        </div>
+        <p class="intro">
+          Drag the blue point around one large reference triangle. It snaps to
+          every 30°, 45°, 60°, and quadrantal angle in a single pass.
+        </p>
+      </header>
+
+      <section class="workspace" aria-label="Interactive unit circle workspace">
+        <div class="canvas-card">
+          <div class="canvas-toolbar">
+            <div class="status-group">
+              <span class="status-dot" aria-hidden="true"></span>
+              <span id="statusText">Drag the blue point around the circle</span>
+            </div>
+            <span id="interactionHint" class="triangle-count">16 exact snap points</span>
+          </div>
+
+          <svg
+            id="geometryCanvas"
+            viewBox="0 0 900 580"
+            role="img"
+            aria-labelledby="canvasTitle canvasDescription"
+          >
+            <title id="canvasTitle">
+              A movable reference triangle and unit circle
+            </title>
+            <desc id="canvasDescription">
+              Drag the triangle's blue endpoint around the circumference to
+              explore every standard special angle.
+            </desc>
+
+            <defs>
+              <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow
+                  dx="0"
+                  dy="8"
+                  stdDeviation="10"
+                  flood-color="#183153"
+                  flood-opacity=".14"
+                />
+              </filter>
+              <marker
+                id="arrowHead"
+                markerWidth="8"
+                markerHeight="8"
+                refX="6"
+                refY="4"
+                orient="auto"
+              >
+                <path d="M0,0 L8,4 L0,8 Z" fill="#90a0b7" />
+              </marker>
+            </defs>
+
+            <g class="grid-lines" aria-hidden="true">
+              <path d="M40 95H860 M40 165H860 M40 235H860 M40 305H860 M40 375H860 M40 445H860 M40 515H860" />
+              <path d="M70 55V545 M140 55V545 M210 55V545 M280 55V545 M350 55V545 M420 55V545 M490 55V545 M560 55V545 M630 55V545 M700 55V545 M770 55V545 M840 55V545" />
+            </g>
+
+            <g id="circleLayer">
+              <circle class="unit-circle-halo" cx="450" cy="290" r="238" />
+              <circle class="unit-circle" cx="450" cy="290" r="220" />
+              <line class="axis" x1="185" y1="290" x2="715" y2="290" />
+              <line class="axis" x1="450" y1="25" x2="450" y2="555" />
+              <text class="axis-label" x="720" y="284">x</text>
+              <text class="axis-label" x="458" y="30">y</text>
+              <text class="tick-label" x="660" y="312">1</text>
+              <text class="tick-label" x="232" y="312">−1</text>
+              <text class="tick-label" x="460" y="78">1</text>
+              <text class="tick-label" x="460" y="512">−1</text>
+
+              <circle class="origin-target" cx="450" cy="290" r="20" />
+              <circle class="origin-core" cx="450" cy="290" r="6" />
+              <text class="origin-label" x="460" y="316">origin</text>
+            </g>
+
+            <g id="specialPoints" class="special-points"></g>
+
+            <g id="triangleGroup" class="triangle-group" tabindex="0">
+              <g id="triangleVisual" filter="url(#softShadow)">
+                <polygon id="triangleFill" class="triangle-fill" points="" />
+                <line id="horizontalLeg" class="triangle-leg leg-a" />
+                <line id="verticalLeg" class="triangle-leg leg-b" />
+                <line id="hypotenuse" class="triangle-leg hypotenuse" />
+                <path id="rightAngleMark" class="right-angle-mark" />
+              </g>
+              <circle id="dragHandle" class="drag-handle" r="16" />
+              <circle id="rightVertex" class="right-vertex" r="11" />
+              <foreignObject id="legALabel" class="side-math-label" width="120" height="46">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="svg-math"></div>
+              </foreignObject>
+              <foreignObject id="legBLabel" class="side-math-label" width="120" height="46">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="svg-math"></div>
+              </foreignObject>
+              <foreignObject id="hypotenuseLabel" class="side-math-label hyp-label" width="120" height="46">
+                <div xmlns="http://www.w3.org/1999/xhtml" class="svg-math"></div>
+              </foreignObject>
+              <text id="triangleName" class="triangle-name">45° reference triangle</text>
+            </g>
+
+          </svg>
+
+          <p id="liveMessage" class="sr-only" aria-live="polite"></p>
+        </div>
+
+        <aside class="learning-panel">
+          <div class="panel-actions">
+            <div>
+              <p class="panel-kicker">Explore the circle</p>
+              <p class="panel-instruction">Drag the blue point continuously.</p>
+            </div>
+            <button id="resetButton" class="reset-button" type="button">
+              Reset to 45°
+            </button>
+          </div>
+
+          <div class="quadrant-controls">
+            <p class="panel-kicker">Jump to a special angle</p>
+            <div id="angleButtons" class="quadrant-buttons" role="group" aria-label="Jump to a special angle"></div>
+          </div>
+
+          <div class="angle-heading">
+            <div>
+              <p id="angleModeLabel" class="panel-kicker">Current angle</p>
+              <div class="angle-value">
+                <span id="degreeValue">45°</span>
+                <span id="radianValue">π/4</span>
+              </div>
+            </div>
+            <span id="quadrantBadge" class="quadrant-badge">Quadrant I</span>
+          </div>
+
+          <div class="angle-position" aria-label="Angle position">
+            <div class="position-item">
+              <span>Quadrant</span>
+              <strong id="quadrantValue">I</strong>
+            </div>
+            <div class="position-divider" aria-hidden="true"></div>
+            <div class="position-item">
+              <span>Reference angle</span>
+              <strong>
+                <span id="referenceDegree">45°</span>
+                <small id="referenceRadian">π/4</small>
+              </strong>
+            </div>
+          </div>
+
+          <div class="coordinate-card">
+            <p>Point on the unit circle</p>
+            <div id="coordinateValue" class="coordinate-value">
+              (√2/2, √2/2)
+            </div>
+            <div class="coordinate-key">
+              <span><i class="key-x"></i>x = cos θ</span>
+              <span><i class="key-y"></i>y = sin θ</span>
+            </div>
+          </div>
+
+          <div class="ratio-explanation">
+            <p class="panel-kicker">Why it works</p>
+            <p id="explanationText">
+              On a unit circle the hypotenuse is 1, so the triangle’s
+              horizontal and vertical legs are the cosine and sine.
+            </p>
+          </div>
+
+          <div class="trig-grid" aria-label="Exact trigonometric values">
+            <div class="trig-card">
+              <span>sin θ</span><strong id="sinValue">√2/2</strong>
+            </div>
+            <div class="trig-card">
+              <span>cos θ</span><strong id="cosValue">√2/2</strong>
+            </div>
+            <div class="trig-card">
+              <span>tan θ</span><strong id="tanValue">1</strong>
+            </div>
+            <div class="trig-card reciprocal">
+              <span>csc θ</span><strong id="cscValue">√2</strong>
+            </div>
+            <div class="trig-card reciprocal">
+              <span>sec θ</span><strong id="secValue">√2</strong>
+            </div>
+            <div class="trig-card reciprocal">
+              <span>cot θ</span><strong id="cotValue">1</strong>
+            </div>
+          </div>
+
+        </aside>
+      </section>
+
+      <footer class="next-step">
+        <div class="footer-note">
+          <span class="step-number">Explore</span>
+          <p>
+            One dynamic reference triangle connects every standard special
+            angle to its exact unit-circle values.
+          </p>
+        </div>
+        <a
+          class="dydx-link"
+          href="https://dydxmath.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Visit dydxmath.com
+          <span aria-hidden="true">↗</span>
+        </a>
+      </footer>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
