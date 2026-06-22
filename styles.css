@@ -39,10 +39,6 @@ button {
 }
 
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
-  column-gap: 64px;
-  align-items: end;
   margin-bottom: 30px;
 }
 
@@ -70,11 +66,11 @@ h1 {
 }
 
 .intro {
-  max-width: 560px;
-  margin: 0 0 6px;
+  margin: 18px 0 0;
   color: #516078;
   font-size: 1.05rem;
   line-height: 1.7;
+  white-space: nowrap;
 }
 
 .workspace {
@@ -1252,11 +1248,6 @@ h1 {
 }
 
 @media (max-width: 1050px) {
-  .hero {
-    grid-template-columns: 1fr;
-    row-gap: 24px;
-  }
-
   .workspace {
     grid-template-columns: 1fr;
   }
@@ -1293,6 +1284,10 @@ h1 {
 
   h1 {
     font-size: clamp(2.5rem, 12vw, 4rem);
+  }
+
+  .intro {
+    white-space: normal;
   }
 
   #geometryCanvas {

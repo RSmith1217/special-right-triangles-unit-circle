@@ -8,7 +8,7 @@
       content="Explore exact trigonometric values by dragging a 45-45-90 triangle into the unit circle."
     />
     <title>Unit Circle Explorer</title>
-    <link rel="stylesheet" href="styles.css?v=22" />
+    <link rel="stylesheet" href="styles.css?v=23" />
     <script>
       window.MathJax = {
         startup: { typeset: false },
@@ -21,13 +21,12 @@
     <main class="app-shell">
       <header class="hero">
         <div class="hero-title">
-          <p class="eyebrow">Geometry you can move</p>
           <h1>Unit Circle Explorer</h1>
+          <p class="intro">
+            Drag the blue point around one large reference triangle. It snaps to
+            every 30°, 45°, 60°, and quadrantal angle in a single pass.
+          </p>
         </div>
-        <p class="intro">
-          Drag the blue point around one large reference triangle. It snaps to
-          every 30°, 45°, 60°, and quadrantal angle in a single pass.
-        </p>
       </header>
 
       <section class="workspace" aria-label="Interactive unit circle workspace">
@@ -245,7 +244,6 @@
 
       <footer class="next-step">
         <div class="footer-note">
-          <span class="step-number">Explore</span>
           <p>
             One dynamic reference triangle connects every standard special
             angle to its exact unit-circle values.
