@@ -341,7 +341,29 @@ h1 {
   outline: none;
 }
 
-.triangle-group:active {
+.triangle-group:active,
+.triangle-group.is-dragging {
+  cursor: grabbing;
+}
+
+.triangle-group .side-math-label,
+.triangle-group .triangle-name,
+.triangle-group #triangleVisual,
+.special-points {
+  pointer-events: none;
+}
+
+.triangle-group .drag-handle {
+  pointer-events: all;
+}
+
+.drag-hit-area {
+  fill: transparent;
+  pointer-events: all;
+  cursor: grab;
+}
+
+.triangle-group.is-dragging .drag-hit-area {
   cursor: grabbing;
 }
 
@@ -806,6 +828,13 @@ h1 {
 
 .trig-card math {
   font-size: 1.12rem;
+}
+
+.trig-card msqrt,
+.coordinate-value msqrt,
+.svg-math msqrt,
+.svg-coordinate msqrt {
+  padding-top: 0.08em;
 }
 
 .trig-card mfrac {

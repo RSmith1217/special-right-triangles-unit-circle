@@ -5,6 +5,7 @@ const horizontalLeg = document.querySelector("#horizontalLeg");
 const verticalLeg = document.querySelector("#verticalLeg");
 const hypotenuse = document.querySelector("#hypotenuse");
 const rightAngleMark = document.querySelector("#rightAngleMark");
+const dragHitArea = document.querySelector("#dragHitArea");
 const dragHandle = document.querySelector("#dragHandle");
 const rightVertex = document.querySelector("#rightVertex");
 const legALabel = document.querySelector("#legALabel");
@@ -188,7 +189,7 @@ function mathAtomMarkup(value) {
   const radicalMatch = value.match(/^(\d*)√(\d+)$/);
   if (radicalMatch) {
     const coefficient = radicalMatch[1] || "";
-    return `<mrow>${coefficient ? `<mn>${coefficient}</mn>` : ""}<msqrt><mn>${radicalMatch[2]}</mn></msqrt></mrow>`;
+    return `<mrow>${coefficient ? `<mn>${coefficient}</mn>` : ""}<msqrt><mrow><mspace width="0" height="0.14em"></mspace><mn>${radicalMatch[2]}</mn></mrow></msqrt></mrow>`;
   }
   const piMatch = value.match(/^(\d*)π$/);
   if (piMatch) {
@@ -341,6 +342,8 @@ function renderDockedTriangle() {
   );
   dragHandle.setAttribute("cx", point.x);
   dragHandle.setAttribute("cy", point.y);
+  dragHitArea.setAttribute("cx", point.x);
+  dragHitArea.setAttribute("cy", point.y);
   rightVertex.setAttribute("cx", center.x);
   rightVertex.setAttribute("cy", center.y);
   setMathPosition(
@@ -499,11 +502,12 @@ function renderAngleButtons() {
 }
 
 triangleGroup.addEventListener("pointerdown", (event) => {
-  if (event.target !== dragHandle) return;
+  if (event.target !== dragHandle && event.target !== dragHitArea) return;
   event.preventDefault();
   const point = toSvgPoint(event);
   state.dragging = true;
   state.pointerId = event.pointerId;
+  triangleGroup.classList.add("is-dragging");
   triangleGroup.setPointerCapture(event.pointerId);
   state.angle = snapAngle(angleFromPoint(point));
   render();
@@ -517,23 +521,48 @@ triangleGroup.addEventListener("pointermove", (event) => {
   render();
 });
 
-triangleGroup.addEventListener("pointerup", (event) => {
-  if (event.pointerId !== state.pointerId) return;
+function finishDrag(event) {
+  if (!state.dragging) return;
+  if (
+    event?.pointerId !== undefined &&
+    state.pointerId !== null &&
+    event.pointerId !== state.pointerId
+  ) {
+    return;
+  }
+
+  const activePointerId = state.pointerId;
   state.dragging = false;
-  triangleGroup.releasePointerCapture(event.pointerId);
   state.pointerId = null;
+  triangleGroup.classList.remove("is-dragging");
+
+  if (
+    activePointerId !== null &&
+    triangleGroup.hasPointerCapture?.(activePointerId)
+  ) {
+    triangleGroup.releasePointerCapture(activePointerId);
+  }
+
   const values = currentValues();
   statusText.textContent = values.exact
     ? `${values.degree} — exact radical values`
     : `${values.degree} — approximate values`;
   liveMessage.textContent = statusText.textContent;
   render();
+}
+
+triangleGroup.addEventListener("pointerup", (event) => {
+  if (event.pointerId !== state.pointerId) return;
+  finishDrag(event);
 });
 
-triangleGroup.addEventListener("pointercancel", () => {
-  state.dragging = false;
-  state.pointerId = null;
-  render();
+triangleGroup.addEventListener("pointercancel", finishDrag);
+triangleGroup.addEventListener("lostpointercapture", finishDrag);
+document.addEventListener("pointerup", finishDrag);
+document.addEventListener("pointercancel", finishDrag);
+window.addEventListener("blur", () => finishDrag());
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) finishDrag();
 });
 
 triangleGroup.addEventListener("keydown", (event) => {
