@@ -1,7 +1,7 @@
 # Special Right Triangles on the Unit Circle
 
-An interactive, dependency-free web applet for deriving exact trigonometric
-values from special right triangles.
+An interactive web applet for deriving exact trigonometric values from special
+right triangles. MathJax renders the point-coordinate expression from LaTeX.
 
 The prototype lets a student:
 
@@ -29,7 +29,8 @@ python3 -m http.server 8000
 
 Then open <http://localhost:8000>.
 
-No build step or package installation is required.
+No build step or package installation is required. An internet connection is
+needed to load MathJax from its CDN.
 
 ## Related
 

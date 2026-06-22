@@ -385,36 +385,15 @@ h1 {
   font-weight: 700;
 }
 
-.graph-coordinate-value math {
-  font-size: 1em;
+.graph-coordinate-value mjx-container {
+  margin: 0 !important;
+  font-size: 1.2em;
 }
 
-.graph-coordinate-value .math-coordinate {
-  gap: 0.24em;
-}
-
-.graph-coordinate-value .math-frac {
-  min-width: 1.35em;
-}
-
-.graph-coordinate-value .math-num {
-  padding: 0 0.12em 0.12em;
-  border-bottom-width: 0.065em;
-}
-
-.graph-coordinate-value .math-den {
-  padding-top: 0.12em;
-}
-
-.graph-coordinate-value .graph-radical {
-  display: inline-block;
-  margin-inline: 0.02em;
-  font-size: 1.05em;
-  vertical-align: -0.08em;
-}
-
-.graph-coordinate-value .graph-radical msqrt {
-  padding-top: 0.06em;
+.graph-coordinate-value mjx-container svg {
+  display: block;
+  max-width: 100%;
+  overflow: visible;
 }
 
 .prompt-arrow {

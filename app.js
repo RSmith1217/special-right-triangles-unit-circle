@@ -144,6 +144,9 @@ let state = {
   dragContinuousAngle: 45,
 };
 
+let graphTypesetTimer = null;
+let graphTypesetToken = 0;
+
 function toSvgPoint(event) {
   const point = svg.createSVGPoint();
   point.x = event.clientX;
@@ -250,34 +253,60 @@ function coordinateMarkup(value) {
   return `<math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mo>(</mo>${mathBodyMarkup(match[1])}<mo>,</mo>${mathBodyMarkup(match[2])}<mo>)</mo></mrow></math>`;
 }
 
-function graphMathAtomMarkup(value) {
+function graphLatexAtom(value) {
   const radicalMatch = value.match(/^(\d*)√(\d+)$/);
   if (radicalMatch) {
     const coefficient = radicalMatch[1] || "";
-    return `${coefficient}<math class="graph-radical" xmlns="http://www.w3.org/1998/Math/MathML"><msqrt><mn>${radicalMatch[2]}</mn></msqrt></math>`;
+    return `${coefficient}\\sqrt{${radicalMatch[2]}}`;
   }
-  return value;
+  return value.replaceAll("π", "\\pi");
 }
 
-function graphMathBodyMarkup(value) {
+function graphLatexBody(value) {
   const raw = String(value);
   const approximate = raw.startsWith("≈ ");
   const withoutApproximation = approximate ? raw.slice(2) : raw;
   const negative = withoutApproximation.startsWith("−");
   const unsigned = negative ? withoutApproximation.slice(1) : withoutApproximation;
   const [numerator, denominator] = unsigned.split("/");
-  const sign = `${approximate ? '<span class="math-sign">≈</span>' : ""}${negative ? '<span class="math-sign">−</span>' : ""}`;
+  const sign = `${approximate ? "\\approx " : ""}${negative ? "-" : ""}`;
 
   if (denominator) {
-    return `${sign}<span class="math-frac"><span class="math-num">${graphMathAtomMarkup(numerator)}</span><span class="math-den">${graphMathAtomMarkup(denominator)}</span></span>`;
+    return `${sign}\\frac{${graphLatexAtom(numerator)}}{${graphLatexAtom(denominator)}}`;
   }
-  return `${sign}${graphMathAtomMarkup(unsigned)}`;
+  return `${sign}${graphLatexAtom(unsigned)}`;
 }
 
-function graphCoordinateMarkup(value) {
+function graphCoordinateLatex(value) {
   const match = String(value).match(/^\((.*), (.*)\)$/);
-  if (!match) return graphMathBodyMarkup(value);
-  return `<span class="math-coordinate"><span>(</span>${graphMathBodyMarkup(match[1])}<span>,</span>${graphMathBodyMarkup(match[2])}<span>)</span></span>`;
+  if (!match) return graphLatexBody(value);
+  return `\\left(${graphLatexBody(match[1])},\\;${graphLatexBody(match[2])}\\right)`;
+}
+
+function renderGraphCoordinate(value) {
+  const token = ++graphTypesetToken;
+  window.clearTimeout(graphTypesetTimer);
+  graphTypesetTimer = window.setTimeout(async () => {
+    if (!window.MathJax?.startup?.promise) {
+      graphCoordinateValue.textContent = value;
+      return;
+    }
+
+    try {
+      await window.MathJax.startup.promise;
+      const rendered = await window.MathJax.tex2svgPromise(
+        graphCoordinateLatex(value),
+        { display: false },
+      );
+      if (token === graphTypesetToken) {
+        graphCoordinateValue.replaceChildren(rendered);
+      }
+    } catch {
+      if (token === graphTypesetToken) {
+        graphCoordinateValue.textContent = value;
+      }
+    }
+  }, state.dragging ? 70 : 0);
 }
 
 function setMathPosition(element, point, value) {
@@ -569,7 +598,7 @@ function updateValues() {
   output.referenceDegree.textContent = values.referenceDegree;
   output.referenceRadian.innerHTML = mathMarkup(values.referenceRadian);
   output.coordinate.innerHTML = coordinateMarkup(values.coordinate);
-  graphCoordinateValue.innerHTML = graphCoordinateMarkup(values.coordinate);
+  renderGraphCoordinate(values.coordinate);
   angleValue.classList.toggle("show-radians", state.unitMode === "radians");
   anglePositionPanel.classList.toggle(
     "show-radians",
