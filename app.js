@@ -233,6 +233,7 @@ function mathAtomMarkup(value) {
 
 function mathBodyMarkup(value) {
   const raw = String(value);
+  if (raw === "N/A") return "<mtext>N/A</mtext>";
   if (raw.startsWith("≈ ")) {
     return `<mrow><mo>≈</mo>${mathBodyMarkup(raw.slice(2))}</mrow>`;
   }
@@ -467,11 +468,11 @@ function currentValues() {
       position,
       referenceDegree:
         position.reference === null
-          ? "not applicable"
+          ? "N/A"
           : `${cleanNumber(position.reference, 1)}°`,
       referenceRadian:
         position.reference === null
-          ? "on an axis"
+          ? "N/A"
           : position.reference === 30
           ? "π/6"
           : position.reference === 45
@@ -496,11 +497,11 @@ function currentValues() {
     position,
     referenceDegree:
       position.reference === null
-        ? "not applicable"
+        ? "N/A"
         : `${cleanNumber(position.reference, 1)}°`,
     referenceRadian:
       position.reference === null
-        ? "on an axis"
+        ? "N/A"
         : `≈ ${cleanNumber(referenceRadians / Math.PI, 2)}π`,
     exact: false,
   };

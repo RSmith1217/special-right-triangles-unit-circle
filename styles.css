@@ -707,10 +707,10 @@ h1 {
   display: grid;
   grid-template-columns: 0.8fr 1px 1.2fr;
   gap: 16px;
-  height: 72px;
+  height: 56px;
   align-items: center;
   margin-top: 18px;
-  padding: 14px 16px;
+  padding: 10px 16px;
   border: 1px solid #dfe6ee;
   border-radius: 14px;
   background: #fffdf8;
