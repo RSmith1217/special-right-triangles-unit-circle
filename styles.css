@@ -325,6 +325,7 @@ h1 {
   font-size: 12px;
   font-weight: 850;
   letter-spacing: 0.1em;
+  text-anchor: middle;
 }
 
 .graph-coordinate-value {
@@ -332,12 +333,22 @@ h1 {
   width: 100%;
   height: 100%;
   align-items: center;
+  justify-content: center;
   color: var(--ink);
   font-family: Georgia, serif;
   font-size: 24px;
   font-weight: 700;
   line-height: 1;
   overflow: hidden;
+}
+
+.graph-coordinate-identity {
+  fill: #64748b;
+  font-family: Georgia, serif;
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 700;
+  text-anchor: middle;
 }
 
 .graph-coordinate-value math {
