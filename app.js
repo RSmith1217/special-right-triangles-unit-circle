@@ -394,8 +394,23 @@ function buildSpecialPoints() {
   specialPointsLayer.replaceChildren(
     ...allSpecialAngles.map((angle) => {
       const point = polarPoint(angle);
-      const horizontalSign = Math.sign(point.x - center.x) || 1;
-      const verticalSign = Math.sign(point.y - center.y) || 1;
+      const radians = (angle * Math.PI) / 180;
+      const radial = {
+        x: Math.cos(radians),
+        y: -Math.sin(radians),
+      };
+      const tangent = {
+        x: -Math.sin(radians),
+        y: -Math.cos(radians),
+      };
+      const degreePoint = {
+        x: point.x + radial.x * 20 + tangent.x * 60,
+        y: point.y + radial.y * 20 + tangent.y * 60,
+      };
+      const coordinatePoint = {
+        x: Math.max(100, Math.min(800, point.x + radial.x * 125)),
+        y: Math.max(35, Math.min(545, point.y + radial.y * 125)),
+      };
       const group = makeSvgElement("g", {
         class: `special-point${quadrantalAngles.includes(angle) ? " quadrantal-point" : ""}`,
         "data-special-angle": angle,
@@ -416,21 +431,21 @@ function buildSpecialPoints() {
       );
       const degree = makeSvgElement("text", {
         class: "point-degree",
-        x: point.x + horizontalSign * 20,
-        y: point.y + verticalSign * 24,
-        "text-anchor": horizontalSign > 0 ? "start" : "end",
+        x: degreePoint.x,
+        y: degreePoint.y + 4,
+        "text-anchor": "middle",
       });
       degree.textContent = `${angle}°`;
       const coordinate = makeSvgElement("foreignObject", {
         class: "point-coordinate",
-        x: horizontalSign > 0 ? point.x + 20 : point.x - 170,
-        y: point.y + verticalSign * 30 - 18,
-        width: 150,
-        height: 36,
+        x: coordinatePoint.x - 90,
+        y: coordinatePoint.y - 23,
+        width: 180,
+        height: 46,
       });
       const coordinateDiv = document.createElement("div");
       coordinateDiv.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
-      coordinateDiv.className = `svg-coordinate ${horizontalSign > 0 ? "align-left" : "align-right"}`;
+      coordinateDiv.className = "svg-coordinate align-center";
       coordinateDiv.innerHTML = coordinateMarkup(exactValues[angle].coordinate);
       coordinate.append(coordinateDiv);
       group.append(degree, coordinate);
