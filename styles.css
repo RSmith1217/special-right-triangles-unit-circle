@@ -649,14 +649,11 @@ h1 {
 }
 
 .angle-heading {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  position: relative;
   height: 128px;
   min-height: 128px;
   max-height: 128px;
   overflow: hidden;
-  align-items: start;
-  gap: 16px;
   padding: 22px 0;
   border-bottom: 1px solid #e5e8ec;
 }
@@ -666,17 +663,22 @@ h1 {
 }
 
 .angle-value {
-  display: flex;
+  display: grid;
+  grid-template-columns: 145px 85px;
+  column-gap: 10px;
+  width: 240px;
+  max-width: 100%;
   height: 66px;
   align-items: center;
-  gap: 12px;
   overflow: hidden;
 }
 
 #degreeValue {
   display: inline-flex;
+  grid-column: 1;
   height: 62px;
   align-items: center;
+  justify-content: flex-start;
   font-family: Georgia, serif;
   font-size: 3.15rem;
   line-height: 1;
@@ -685,8 +687,10 @@ h1 {
 
 #radianValue {
   display: inline-flex;
+  grid-column: 2;
   height: 62px;
   align-items: center;
+  justify-content: flex-start;
   color: var(--muted);
   font-family: Georgia, serif;
   font-size: 1.45rem;
@@ -705,11 +709,12 @@ h1 {
 }
 
 .angle-value.show-radians {
-  flex-direction: row-reverse;
-  justify-content: flex-end;
+  grid-template-columns: 145px 85px;
 }
 
 .angle-value.show-radians #radianValue {
+  grid-column: 1;
+  grid-row: 1;
   color: var(--ink);
   font-size: 1.75rem;
   line-height: 1;
@@ -717,12 +722,17 @@ h1 {
 }
 
 .angle-value.show-radians #degreeValue {
+  grid-column: 2;
+  grid-row: 1;
   color: var(--muted);
   font-size: 1.2rem;
   letter-spacing: 0;
 }
 
 .quadrant-badge {
+  position: absolute;
+  top: 22px;
+  right: 0;
   border-radius: 999px;
   background: #eaf1ff;
   color: var(--blue-dark);
