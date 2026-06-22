@@ -146,6 +146,8 @@ let state = {
 
 let graphTypesetTimer = null;
 let graphTypesetToken = 0;
+const latexRenderCache = new Map();
+const latexRenderTokens = new WeakMap();
 
 function toSvgPoint(event) {
   const point = svg.createSVGPoint();
@@ -253,7 +255,7 @@ function coordinateMarkup(value) {
   return `<math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mo>(</mo>${mathBodyMarkup(match[1])}<mo>,</mo>${mathBodyMarkup(match[2])}<mo>)</mo></mrow></math>`;
 }
 
-function graphLatexAtom(value) {
+function latexAtom(value) {
   const radicalMatch = value.match(/^(\d*)√(\d+)$/);
   if (radicalMatch) {
     const coefficient = radicalMatch[1] || "";
@@ -262,7 +264,7 @@ function graphLatexAtom(value) {
   return value.replaceAll("π", "\\pi");
 }
 
-function graphLatexBody(value) {
+function latexBody(value) {
   const raw = String(value);
   const approximate = raw.startsWith("≈ ");
   const withoutApproximation = approximate ? raw.slice(2) : raw;
@@ -272,15 +274,62 @@ function graphLatexBody(value) {
   const sign = `${approximate ? "\\approx " : ""}${negative ? "-" : ""}`;
 
   if (denominator) {
-    return `${sign}\\frac{${graphLatexAtom(numerator)}}{${graphLatexAtom(denominator)}}`;
+    return `${sign}\\frac{${latexAtom(numerator)}}{${latexAtom(denominator)}}`;
   }
-  return `${sign}${graphLatexAtom(unsigned)}`;
+  return `${sign}${latexAtom(unsigned)}`;
 }
 
-function graphCoordinateLatex(value) {
+function coordinateLatex(value) {
   const match = String(value).match(/^\((.*), (.*)\)$/);
-  if (!match) return graphLatexBody(value);
-  return `\\left(${graphLatexBody(match[1])},\\;${graphLatexBody(match[2])}\\right)`;
+  if (!match) return latexBody(value);
+  return `\\left(${latexBody(match[1])},\\;${latexBody(match[2])}\\right)`;
+}
+
+async function latexNode(latex) {
+  if (!latexRenderCache.has(latex)) {
+    latexRenderCache.set(
+      latex,
+      (async () => {
+        await window.MathJax.startup.promise;
+        return window.MathJax.tex2svgPromise(latex, { display: false });
+      })(),
+    );
+  }
+  return (await latexRenderCache.get(latex)).cloneNode(true);
+}
+
+async function renderLatex(element, latex, fallbackText) {
+  const token = Symbol(latex);
+  latexRenderTokens.set(element, token);
+  try {
+    if (!window.MathJax?.startup?.promise) {
+      element.textContent = fallbackText;
+      return;
+    }
+    const rendered = await latexNode(latex);
+    if (latexRenderTokens.get(element) === token) {
+      element.replaceChildren(rendered);
+    }
+  } catch {
+    latexRenderCache.delete(latex);
+    if (latexRenderTokens.get(element) === token) {
+      element.textContent = fallbackText;
+    }
+  }
+}
+
+function renderMathValue(element, value, options = {}) {
+  const { coordinate = false, forceLatex = false } = options;
+  if (forceLatex || String(value).includes("√")) {
+    const latex = coordinate ? coordinateLatex(value) : latexBody(value);
+    void renderLatex(element, latex, value);
+    return;
+  }
+
+  latexRenderTokens.delete(element);
+  element.innerHTML = coordinate
+    ? coordinateMarkup(value)
+    : mathMarkup(value);
 }
 
 function renderGraphCoordinate(value) {
@@ -294,12 +343,11 @@ function renderGraphCoordinate(value) {
 
     try {
       await window.MathJax.startup.promise;
-      const rendered = await window.MathJax.tex2svgPromise(
-        graphCoordinateLatex(value),
-        { display: false },
-      );
       if (token === graphTypesetToken) {
-        graphCoordinateValue.replaceChildren(rendered);
+        renderMathValue(graphCoordinateValue, value, {
+          coordinate: true,
+          forceLatex: true,
+        });
       }
     } catch {
       if (token === graphTypesetToken) {
@@ -314,7 +362,7 @@ function setMathPosition(element, point, value) {
   const height = Number(element.getAttribute("height")) || 46;
   element.setAttribute("x", point.x - width / 2);
   element.setAttribute("y", point.y - height / 2);
-  element.querySelector(".svg-math").innerHTML = mathMarkup(value);
+  renderMathValue(element.querySelector(".svg-math"), value);
 }
 
 function cleanNumber(value, digits = 3) {
@@ -597,7 +645,7 @@ function updateValues() {
   output.quadrantValue.textContent = values.position.roman;
   output.referenceDegree.textContent = values.referenceDegree;
   output.referenceRadian.innerHTML = mathMarkup(values.referenceRadian);
-  output.coordinate.innerHTML = coordinateMarkup(values.coordinate);
+  renderMathValue(output.coordinate, values.coordinate, { coordinate: true });
   renderGraphCoordinate(values.coordinate);
   angleValue.classList.toggle("show-radians", state.unitMode === "radians");
   anglePositionPanel.classList.toggle(
@@ -605,7 +653,7 @@ function updateValues() {
     state.unitMode === "radians",
   );
   ["sin", "cos", "tan", "csc", "sec", "cot"].forEach((key) => {
-    output[key].innerHTML = mathMarkup(values[key]);
+    renderMathValue(output[key], values[key]);
   });
   document.querySelectorAll("[data-angle]").forEach((button) => {
     const angle = Number(button.dataset.angle);

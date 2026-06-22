@@ -396,6 +396,32 @@ h1 {
   overflow: visible;
 }
 
+.svg-math mjx-container,
+.coordinate-value mjx-container,
+.trig-card mjx-container {
+  margin: 0 !important;
+}
+
+.svg-math mjx-container svg,
+.coordinate-value mjx-container svg,
+.trig-card mjx-container svg {
+  display: block;
+  max-width: 100%;
+  overflow: visible;
+}
+
+.svg-math mjx-container {
+  font-size: 1.04em;
+}
+
+.coordinate-value mjx-container {
+  font-size: 1em;
+}
+
+.trig-card mjx-container {
+  font-size: 1.12rem;
+}
+
 .prompt-arrow {
   fill: none;
   stroke: #90a0b7;

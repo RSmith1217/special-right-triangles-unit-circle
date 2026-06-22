@@ -10,7 +10,7 @@ The prototype lets a student:
 - see decimal approximations between special angles and exact radical values
   when the point snaps to a special angle;
 - snap to 0°, 90°, 180°, and 270° with exact axis values;
-- display radicals with a full vinculum and fractions in stacked form;
+- render radicals consistently from LaTeX with a full vinculum and stacked fractions;
 - reach every quadrantal, 30°, 45°, and 60° special angle in one pass;
 - switch the circle and jump controls between degree and radian labels;
 - preserve clockwise direction as negative degree and radian angle measures;
