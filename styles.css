@@ -649,6 +649,7 @@ h1 {
 
 .angle-heading {
   display: flex;
+  height: 128px;
   align-items: start;
   justify-content: space-between;
   gap: 16px;
@@ -1283,6 +1284,7 @@ h1 {
   }
 
   .angle-heading {
+    height: 112px;
     align-items: center;
   }
 

@@ -674,7 +674,10 @@ function updateValues() {
   output.quadrantValue.textContent = values.position.roman;
   output.referenceDegree.textContent = values.referenceDegree;
   output.referenceRadian.innerHTML = mathMarkup(values.referenceRadian);
-  renderMathValue(output.coordinate, values.coordinate, { coordinate: true });
+  renderMathValue(output.coordinate, values.coordinate, {
+    coordinate: true,
+    forceLatex: true,
+  });
   renderGraphCoordinate(values.coordinate);
   angleValue.classList.toggle("show-radians", state.unitMode === "radians");
   anglePositionPanel.classList.toggle(
