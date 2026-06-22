@@ -82,10 +82,12 @@ h1 {
   grid-template-columns: minmax(0, 1.55fr) minmax(330px, 0.65fr);
   gap: 22px;
   align-items: stretch;
+  min-width: 0;
 }
 
 .canvas-card,
 .learning-panel {
+  min-width: 0;
   border: 1px solid rgba(20, 33, 61, 0.09);
   border-radius: 24px;
   background: var(--card);
@@ -191,8 +193,7 @@ h1 {
   transition: r 140ms ease, fill 140ms ease;
 }
 
-.special-point .point-degree,
-.special-point .point-coordinate {
+.special-point .point-degree {
   fill: #66758c;
   paint-order: stroke;
   stroke: #fffdf8;
@@ -201,23 +202,8 @@ h1 {
   font-weight: 850;
 }
 
-.special-point .point-coordinate {
-  fill: var(--ink);
-  font-family: Georgia, serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  opacity: 0;
-  transition: opacity 140ms ease;
-}
-
-.special-point.active .point-coordinate,
 .special-point.active .point-degree {
   fill: var(--blue-dark);
-}
-
-.special-point.active .point-coordinate {
-  opacity: 1;
 }
 
 .special-point.active .point-ring {
@@ -240,10 +226,6 @@ h1 {
 
 .special-point.quadrantal-point.active .point-dot {
   fill: var(--coral);
-}
-
-.special-point.quadrantal-point .point-coordinate {
-  fill: #8f3f33;
 }
 
 .hover-tooltip {
@@ -321,6 +303,45 @@ h1 {
 
 .origin-core {
   fill: var(--ink);
+}
+
+.graph-coordinate-panel {
+  pointer-events: none;
+  filter: drop-shadow(0 7px 12px rgba(20, 33, 61, 0.11));
+}
+
+.graph-coordinate-panel foreignObject {
+  overflow: hidden;
+}
+
+.graph-coordinate-panel rect {
+  fill: rgba(255, 253, 248, 0.94);
+  stroke: #cad6e6;
+  stroke-width: 1.5;
+}
+
+.graph-coordinate-title {
+  fill: var(--blue-dark);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+}
+
+.graph-coordinate-value {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  color: var(--ink);
+  font-family: Georgia, serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+  overflow: hidden;
+}
+
+.graph-coordinate-value math {
+  font-size: 1em;
 }
 
 .prompt-arrow {
@@ -837,7 +858,8 @@ h1 {
 .trig-card msqrt,
 .coordinate-value msqrt,
 .svg-math msqrt,
-.svg-coordinate msqrt {
+.svg-coordinate msqrt,
+.graph-coordinate-value msqrt {
   padding-top: 0.08em;
 }
 
@@ -851,6 +873,7 @@ h1 {
 
 .svg-math math,
 .svg-coordinate math,
+.graph-coordinate-value math,
 #radianValue math,
 #referenceRadian math {
   font-size: 1em;
@@ -1166,6 +1189,10 @@ h1 {
   .next-step {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .graph-coordinate-value {
+    font-size: 21px;
   }
 
   .footer-note {

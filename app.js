@@ -18,6 +18,7 @@ const interactionHint = document.querySelector("#interactionHint");
 const angleButtons = document.querySelector("#angleButtons");
 const resetButton = document.querySelector("#resetButton");
 const liveMessage = document.querySelector("#liveMessage");
+const graphCoordinateValue = document.querySelector("#graphCoordinateValue");
 
 const output = {
   degree: document.querySelector("#degreeValue"),
@@ -403,17 +404,6 @@ function buildSpecialPoints() {
         x: point.x + radial.x * 48,
         y: point.y + radial.y * 48,
       };
-      const coordinatePoint = {
-        x: Math.max(
-          100,
-          Math.min(
-            800,
-            point.x + radial.x * 125,
-          ),
-        ),
-        y: Math.max(35, Math.min(545, point.y + radial.y * 125)),
-      };
-      const isVerticalAxis = angle === 90 || angle === 270;
       const group = makeSvgElement("g", {
         class: `special-point${quadrantalAngles.includes(angle) ? " quadrantal-point" : ""}`,
         "data-special-angle": angle,
@@ -439,19 +429,7 @@ function buildSpecialPoints() {
         "text-anchor": "middle",
       });
       degree.textContent = `${angle}°`;
-      const coordinate = makeSvgElement("foreignObject", {
-        class: "point-coordinate",
-        x: isVerticalAxis ? point.x + 48 : coordinatePoint.x - 90,
-        y: isVerticalAxis ? point.y - 23 : coordinatePoint.y - 23,
-        width: 180,
-        height: 46,
-      });
-      const coordinateDiv = document.createElement("div");
-      coordinateDiv.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
-      coordinateDiv.className = `svg-coordinate ${isVerticalAxis ? "align-left" : "align-center"}`;
-      coordinateDiv.innerHTML = coordinateMarkup(exactValues[angle].coordinate);
-      coordinate.append(coordinateDiv);
-      group.append(degree, coordinate);
+      group.append(degree);
       return group;
     }),
   );
@@ -473,6 +451,7 @@ function updateValues() {
   output.referenceDegree.textContent = values.referenceDegree;
   output.referenceRadian.innerHTML = mathMarkup(values.referenceRadian);
   output.coordinate.innerHTML = coordinateMarkup(values.coordinate);
+  graphCoordinateValue.innerHTML = coordinateMarkup(values.coordinate);
   ["sin", "cos", "tan", "csc", "sec", "cot"].forEach((key) => {
     output[key].innerHTML = mathMarkup(values[key]);
   });

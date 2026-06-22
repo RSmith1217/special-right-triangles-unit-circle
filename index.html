@@ -8,7 +8,7 @@
       content="Explore exact trigonometric values by dragging a 45-45-90 triangle into the unit circle."
     />
     <title>Special Triangles on the Unit Circle</title>
-    <link rel="stylesheet" href="styles.css?v=5" />
+    <link rel="stylesheet" href="styles.css?v=6" />
   </head>
   <body>
     <main class="app-shell">
@@ -89,6 +89,18 @@
               <circle class="origin-target" cx="450" cy="290" r="20" />
               <circle class="origin-core" cx="450" cy="290" r="6" />
               <text class="origin-label" x="460" y="316">origin</text>
+            </g>
+
+            <g id="graphCoordinatePanel" class="graph-coordinate-panel" aria-label="Current point coordinates">
+              <rect x="54" y="52" width="245" height="82" rx="14" />
+              <text class="graph-coordinate-title" x="72" y="78">POINT (x, y)</text>
+              <foreignObject x="69" y="82" width="215" height="44">
+                <div
+                  xmlns="http://www.w3.org/1999/xhtml"
+                  id="graphCoordinateValue"
+                  class="graph-coordinate-value"
+                ></div>
+              </foreignObject>
             </g>
 
             <g id="specialPoints" class="special-points"></g>
@@ -226,6 +238,6 @@
       </footer>
     </main>
 
-    <script src="app.js?v=5"></script>
+    <script src="app.js?v=6"></script>
   </body>
 </html>
