@@ -254,7 +254,7 @@ function graphMathAtomMarkup(value) {
   const radicalMatch = value.match(/^(\d*)√(\d+)$/);
   if (radicalMatch) {
     const coefficient = radicalMatch[1] || "";
-    return `${coefficient}<span class="math-radical"><span class="root-symbol">√</span><span class="radicand">${radicalMatch[2]}</span></span>`;
+    return `${coefficient}<math class="graph-radical" xmlns="http://www.w3.org/1998/Math/MathML"><msqrt><mn>${radicalMatch[2]}</mn></msqrt></math>`;
   }
   return value;
 }

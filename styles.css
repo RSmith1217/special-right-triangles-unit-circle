@@ -406,19 +406,15 @@ h1 {
   padding-top: 0.12em;
 }
 
-.graph-coordinate-value .math-radical {
-  padding-top: 0.05em;
+.graph-coordinate-value .graph-radical {
+  display: inline-block;
+  margin-inline: 0.02em;
+  font-size: 1.05em;
+  vertical-align: -0.08em;
 }
 
-.graph-coordinate-value .root-symbol {
-  font-size: 1.18em;
-  line-height: 0.92;
-}
-
-.graph-coordinate-value .radicand {
-  margin-left: -0.1em;
-  padding: 0.04em 0.1em 0;
-  border-top-width: 0.07em;
+.graph-coordinate-value .graph-radical msqrt {
+  padding-top: 0.06em;
 }
 
 .prompt-arrow {
