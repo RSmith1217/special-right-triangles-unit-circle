@@ -12,7 +12,9 @@ The prototype lets a student:
 - snap to 0°, 90°, 180°, and 270° with exact axis values;
 - display radicals with a full vinculum and fractions in stacked form;
 - reach every quadrantal, 30°, 45°, and 60° special angle in one pass;
+- switch the circle and jump controls between degree and radian labels;
 - track the quadrant and reference angle during exploration;
+- see the reference angle as a highlighted arc to the nearest x-axis;
 - connect signed leg lengths to `(cos θ, sin θ)`; and
 - restart the construction with the side-mounted reset control.
 

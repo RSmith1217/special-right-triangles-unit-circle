@@ -18,6 +18,11 @@ const interactionHint = document.querySelector("#interactionHint");
 const angleButtons = document.querySelector("#angleButtons");
 const liveMessage = document.querySelector("#liveMessage");
 const graphCoordinateValue = document.querySelector("#graphCoordinateValue");
+const referenceAngleArc = document.querySelector("#referenceAngleArc");
+const referenceAngleArcLabel = document.querySelector("#referenceAngleArcLabel");
+const unitButtons = document.querySelectorAll("[data-unit]");
+const angleValue = document.querySelector(".angle-value");
+const originLabel = document.querySelector("#originLabel");
 
 const output = {
   degree: document.querySelector("#degreeValue"),
@@ -130,6 +135,7 @@ const exactValues = {
 
 let state = {
   angle: 45,
+  unitMode: "degrees",
   dragging: false,
   pointerId: null,
 };
@@ -327,6 +333,8 @@ function renderDockedTriangle() {
   const horizontalSign = Math.sign(point.x - center.x) || 1;
   const verticalSign = Math.sign(point.y - center.y) || 1;
   const values = currentValues();
+  originLabel.setAttribute("x", horizontalSign > 0 ? center.x - 12 : center.x + 12);
+  originLabel.setAttribute("text-anchor", horizontalSign > 0 ? "end" : "start");
 
   triangleFill.setAttribute(
     "points",
@@ -340,6 +348,7 @@ function renderDockedTriangle() {
     `M${projection.x - horizontalSign * 15} ${projection.y} ` +
       `V${projection.y + verticalSign * 15} H${projection.x}`,
   );
+  renderReferenceAngle(values);
   dragHandle.setAttribute("cx", point.x);
   dragHandle.setAttribute("cy", point.y);
   dragHitArea.setAttribute("cx", point.x);
@@ -380,6 +389,41 @@ function renderDockedTriangle() {
       ? `${values.referenceDegree} reference triangle`
       : "dynamic reference triangle",
   );
+}
+
+function radianLabel(angle) {
+  return exactValues[angle]?.radian ?? `≈ ${cleanNumber(angle / 180, 2)}π`;
+}
+
+function renderReferenceAngle(values) {
+  const reference = values.position.reference;
+  if (reference === null) {
+    referenceAngleArc.setAttribute("d", "");
+    referenceAngleArcLabel.textContent = "";
+    return;
+  }
+
+  const boundaryAngle =
+    state.angle < 90 ? 0 :
+    state.angle < 270 ? 180 :
+    360;
+  const radius = 52;
+  const start = polarPoint(boundaryAngle, radius);
+  const end = polarPoint(state.angle, radius);
+  const increasing = state.angle - boundaryAngle > 0;
+  referenceAngleArc.setAttribute(
+    "d",
+    `M${start.x} ${start.y} A${radius} ${radius} 0 0 ${increasing ? 0 : 1} ${end.x} ${end.y}`,
+  );
+
+  const midpointAngle = (boundaryAngle + state.angle) / 2;
+  const labelPoint = polarPoint(midpointAngle, 78);
+  referenceAngleArcLabel.setAttribute("x", labelPoint.x);
+  referenceAngleArcLabel.setAttribute("y", labelPoint.y + 5);
+  referenceAngleArcLabel.textContent =
+    state.unitMode === "degrees"
+      ? values.referenceDegree
+      : values.referenceRadian.replace("≈ ", "");
 }
 
 function makeSvgElement(tag, attributes = {}) {
@@ -427,7 +471,8 @@ function buildSpecialPoints() {
         y: degreePoint.y + 4,
         "text-anchor": "middle",
       });
-      degree.textContent = `${angle}°`;
+      degree.textContent =
+        state.unitMode === "degrees" ? `${angle}°` : radianLabel(angle);
       group.append(degree);
       return group;
     }),
@@ -451,14 +496,25 @@ function updateValues() {
   output.referenceRadian.innerHTML = mathMarkup(values.referenceRadian);
   output.coordinate.innerHTML = coordinateMarkup(values.coordinate);
   graphCoordinateValue.innerHTML = coordinateMarkup(values.coordinate);
+  angleValue.classList.toggle("show-radians", state.unitMode === "radians");
   ["sin", "cos", "tan", "csc", "sec", "cot"].forEach((key) => {
     output[key].innerHTML = mathMarkup(values[key]);
   });
   document.querySelectorAll("[data-angle]").forEach((button) => {
+    const angle = Number(button.dataset.angle);
+    button.innerHTML =
+      state.unitMode === "degrees"
+        ? `${angle}°`
+        : mathMarkup(radianLabel(angle));
     button.classList.toggle(
       "active",
-      angularDistance(state.angle, Number(button.dataset.angle)) < 0.01,
+      angularDistance(state.angle, angle) < 0.01,
     );
+  });
+  unitButtons.forEach((button) => {
+    const active = button.dataset.unit === state.unitMode;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
   });
 }
 
@@ -484,6 +540,14 @@ function renderAngleButtons() {
     }),
   );
 }
+
+unitButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    state.unitMode = button.dataset.unit;
+    buildSpecialPoints();
+    render();
+  });
+});
 
 triangleGroup.addEventListener("pointerdown", (event) => {
   if (event.target !== dragHandle && event.target !== dragHitArea) return;
