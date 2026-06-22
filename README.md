@@ -18,6 +18,7 @@ The prototype lets a student:
 - reach every quadrantal, 30°, 45°, and 60° special angle in one pass;
 - switch the circle and jump controls between degree and radian labels;
 - preserve clockwise direction as negative degree and radian angle measures;
+- show non-special radian measures as decimals while retaining exact π forms;
 - track the quadrant and reference angle during exploration;
 - see the reference angle as a highlighted arc to the nearest x-axis;
 - connect signed leg lengths to `(cos θ, sin θ)`; and

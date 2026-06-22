@@ -274,6 +274,7 @@ function latexAtom(value) {
   }
   return value
     .replaceAll("π", "\\pi")
+    .replace(/ rad$/, "\\,\\mathrm{rad}")
     .replace(/(\d+(?:\.\d+)?)°/g, "$1^{\\circ}");
 }
 
@@ -428,7 +429,9 @@ function greatestCommonDivisor(a, b) {
 }
 
 function signedRadianLabel(angle, exact = false) {
-  if (!exact) return `≈ ${cleanNumber(angle / 180, 2)}π`;
+  if (!exact) {
+    return `≈ ${cleanNumber((angle * Math.PI) / 180, 2)}`;
+  }
 
   const rounded = Math.round(angle);
   if (rounded === 0) return "0";
@@ -521,7 +524,7 @@ function currentValues() {
     referenceRadian:
       position.reference === null
         ? "N/A"
-        : `≈ ${cleanNumber(referenceRadians / Math.PI, 2)}π`,
+        : `≈ ${cleanNumber(referenceRadians, 2)}`,
     exact: false,
   };
 }
@@ -591,7 +594,8 @@ function renderDockedTriangle() {
 }
 
 function radianLabel(angle) {
-  return exactValues[angle]?.radian ?? `≈ ${cleanNumber(angle / 180, 2)}π`;
+  return exactValues[angle]?.radian ??
+    `≈ ${cleanNumber((angle * Math.PI) / 180, 2)}`;
 }
 
 function renderReferenceAngle(values) {
