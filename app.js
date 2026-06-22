@@ -16,7 +16,6 @@ const specialPointsLayer = document.querySelector("#specialPoints");
 const statusText = document.querySelector("#statusText");
 const interactionHint = document.querySelector("#interactionHint");
 const angleButtons = document.querySelector("#angleButtons");
-const resetButton = document.querySelector("#resetButton");
 const liveMessage = document.querySelector("#liveMessage");
 const graphCoordinateValue = document.querySelector("#graphCoordinateValue");
 
@@ -469,18 +468,6 @@ function render() {
   updateSpecialPoints();
 }
 
-function reset() {
-  state = {
-    angle: 45,
-    dragging: false,
-    pointerId: null,
-  };
-  interactionHint.textContent = "16 exact snap points";
-  statusText.textContent = "Reset to 45° — drag the blue point";
-  liveMessage.textContent = "The reference triangle has been reset to 45 degrees.";
-  render();
-}
-
 function renderAngleButtons() {
   angleButtons.replaceChildren(
     ...allSpecialAngles.map((angle) => {
@@ -575,7 +562,6 @@ triangleGroup.addEventListener("keydown", (event) => {
   }
 });
 
-resetButton.addEventListener("click", reset);
 renderAngleButtons();
 buildSpecialPoints();
 render();
