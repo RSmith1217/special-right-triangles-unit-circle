@@ -700,6 +700,11 @@ h1 {
 
 #degreeValue mjx-container,
 #radianValue mjx-container {
+  display: flex !important;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: flex-start;
   margin: 0 !important;
 }
 
@@ -708,6 +713,7 @@ h1 {
   display: block;
   max-width: 100%;
   overflow: visible;
+  vertical-align: 0 !important;
 }
 
 .angle-value.show-radians {
@@ -1060,11 +1066,15 @@ h1 {
 }
 
 .quadrant-buttons.radian-labels button {
-  font-size: 0.9rem;
+  color: #34445c;
+  font-size: 0.92rem;
+  font-weight: 900;
 }
 
 .quadrant-buttons.radian-labels button math {
   font-size: 1em;
+  font-weight: 800;
+  text-shadow: 0 0 0.01px currentColor;
 }
 
 .quadrant-buttons button:hover {
