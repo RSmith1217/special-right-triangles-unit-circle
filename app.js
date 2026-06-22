@@ -408,13 +408,12 @@ function buildSpecialPoints() {
           100,
           Math.min(
             800,
-            point.x +
-              radial.x * 125 +
-              (angle === 90 || angle === 270 ? 115 : 0),
+            point.x + radial.x * 125,
           ),
         ),
         y: Math.max(35, Math.min(545, point.y + radial.y * 125)),
       };
+      const isVerticalAxis = angle === 90 || angle === 270;
       const group = makeSvgElement("g", {
         class: `special-point${quadrantalAngles.includes(angle) ? " quadrantal-point" : ""}`,
         "data-special-angle": angle,
@@ -442,14 +441,14 @@ function buildSpecialPoints() {
       degree.textContent = `${angle}°`;
       const coordinate = makeSvgElement("foreignObject", {
         class: "point-coordinate",
-        x: coordinatePoint.x - 90,
-        y: coordinatePoint.y - 23,
+        x: isVerticalAxis ? point.x + 48 : coordinatePoint.x - 90,
+        y: isVerticalAxis ? point.y - 23 : coordinatePoint.y - 23,
         width: 180,
         height: 46,
       });
       const coordinateDiv = document.createElement("div");
       coordinateDiv.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
-      coordinateDiv.className = "svg-coordinate align-center";
+      coordinateDiv.className = `svg-coordinate ${isVerticalAxis ? "align-left" : "align-center"}`;
       coordinateDiv.innerHTML = coordinateMarkup(exactValues[angle].coordinate);
       coordinate.append(coordinateDiv);
       group.append(degree, coordinate);
