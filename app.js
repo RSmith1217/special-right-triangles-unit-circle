@@ -617,6 +617,10 @@ function makeSvgElement(tag, attributes = {}) {
 }
 
 function buildSpecialPoints() {
+  specialPointsLayer.classList.toggle(
+    "radian-labels",
+    state.unitMode === "radians",
+  );
   specialPointsLayer.replaceChildren(
     ...allSpecialAngles.map((angle) => {
       const point = polarPoint(angle);
@@ -684,6 +688,10 @@ function updateValues() {
   angleValue.classList.toggle("show-radians", state.unitMode === "radians");
   anglePositionPanel.classList.toggle(
     "show-radians",
+    state.unitMode === "radians",
+  );
+  angleButtons.classList.toggle(
+    "radian-labels",
     state.unitMode === "radians",
   );
   ["sin", "cos", "tan", "csc", "sec", "cot"].forEach((key) => {

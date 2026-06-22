@@ -229,6 +229,10 @@ h1 {
   font-weight: 850;
 }
 
+.special-points.radian-labels .point-degree {
+  font-size: 13.5px;
+}
+
 .special-point .point-degree math {
   font-size: 1em;
 }
@@ -374,11 +378,12 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #64748b;
+  color: #44536a;
   font-family: Georgia, serif;
-  font-size: 14px;
+  font-size: 15px;
   font-style: italic;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: 0.01em;
 }
 
 .graph-coordinate-value mjx-container {
@@ -1034,6 +1039,14 @@ h1 {
   cursor: pointer;
   font-size: 0.78rem;
   font-weight: 800;
+}
+
+.quadrant-buttons.radian-labels button {
+  font-size: 0.9rem;
+}
+
+.quadrant-buttons.radian-labels button math {
+  font-size: 1em;
 }
 
 .quadrant-buttons button:hover {
