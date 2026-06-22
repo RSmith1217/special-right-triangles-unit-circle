@@ -368,7 +368,7 @@ h1 {
   justify-content: center;
   color: var(--ink);
   font-family: Georgia, serif;
-  font-size: 24px;
+  font-size: 25px;
   font-weight: 700;
   line-height: 1;
   overflow: hidden;
@@ -380,13 +380,45 @@ h1 {
   justify-content: center;
   color: #64748b;
   font-family: Georgia, serif;
-  font-size: 12px;
+  font-size: 14px;
   font-style: italic;
   font-weight: 700;
 }
 
 .graph-coordinate-value math {
   font-size: 1em;
+}
+
+.graph-coordinate-value .math-coordinate {
+  gap: 0.24em;
+}
+
+.graph-coordinate-value .math-frac {
+  min-width: 1.35em;
+}
+
+.graph-coordinate-value .math-num {
+  padding: 0 0.12em 0.12em;
+  border-bottom-width: 0.065em;
+}
+
+.graph-coordinate-value .math-den {
+  padding-top: 0.12em;
+}
+
+.graph-coordinate-value .math-radical {
+  padding-top: 0.05em;
+}
+
+.graph-coordinate-value .root-symbol {
+  font-size: 1.18em;
+  line-height: 0.92;
+}
+
+.graph-coordinate-value .radicand {
+  margin-left: -0.1em;
+  padding: 0.04em 0.1em 0;
+  border-top-width: 0.07em;
 }
 
 .prompt-arrow {
@@ -708,6 +740,21 @@ h1 {
   color: var(--muted);
   font-size: 0.78rem;
   font-weight: 600;
+}
+
+.angle-position #referenceRadian {
+  display: none;
+}
+
+.angle-position.show-radians #referenceDegree {
+  display: none;
+}
+
+.angle-position.show-radians #referenceRadian {
+  display: inline-flex;
+  color: var(--ink);
+  font-size: 1.15rem;
+  font-weight: 700;
 }
 
 .position-divider {

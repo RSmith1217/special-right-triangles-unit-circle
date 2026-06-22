@@ -22,6 +22,7 @@ const referenceAngleArc = document.querySelector("#referenceAngleArc");
 const referenceAngleArcLabel = document.querySelector("#referenceAngleArcLabel");
 const unitButtons = document.querySelectorAll("[data-unit]");
 const angleValue = document.querySelector(".angle-value");
+const anglePositionPanel = document.querySelector(".angle-position");
 const originLabel = document.querySelector("#originLabel");
 
 const output = {
@@ -135,9 +136,12 @@ const exactValues = {
 
 let state = {
   angle: 45,
+  signedAngle: 45,
   unitMode: "degrees",
   dragging: false,
   pointerId: null,
+  lastPointerAngle: null,
+  dragContinuousAngle: 45,
 };
 
 function toSvgPoint(event) {
@@ -164,6 +168,19 @@ function angleFromPoint(point) {
 
 function angularDistance(a, b) {
   return Math.min(Math.abs(a - b), 360 - Math.abs(a - b));
+}
+
+function normalizeAngle(angle) {
+  const normalized = ((angle % 360) + 360) % 360;
+  return Math.abs(normalized - 360) < 0.0005 ? 0 : normalized;
+}
+
+function signedAngularDelta(current, previous) {
+  return ((current - previous + 540) % 360) - 180;
+}
+
+function nearestEquivalentAngle(angle, target) {
+  return angle + 360 * Math.round((target - angle) / 360);
 }
 
 function snapAngle(angle) {
@@ -233,6 +250,36 @@ function coordinateMarkup(value) {
   return `<math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mo>(</mo>${mathBodyMarkup(match[1])}<mo>,</mo>${mathBodyMarkup(match[2])}<mo>)</mo></mrow></math>`;
 }
 
+function graphMathAtomMarkup(value) {
+  const radicalMatch = value.match(/^(\d*)√(\d+)$/);
+  if (radicalMatch) {
+    const coefficient = radicalMatch[1] || "";
+    return `${coefficient}<span class="math-radical"><span class="root-symbol">√</span><span class="radicand">${radicalMatch[2]}</span></span>`;
+  }
+  return value;
+}
+
+function graphMathBodyMarkup(value) {
+  const raw = String(value);
+  const approximate = raw.startsWith("≈ ");
+  const withoutApproximation = approximate ? raw.slice(2) : raw;
+  const negative = withoutApproximation.startsWith("−");
+  const unsigned = negative ? withoutApproximation.slice(1) : withoutApproximation;
+  const [numerator, denominator] = unsigned.split("/");
+  const sign = `${approximate ? '<span class="math-sign">≈</span>' : ""}${negative ? '<span class="math-sign">−</span>' : ""}`;
+
+  if (denominator) {
+    return `${sign}<span class="math-frac"><span class="math-num">${graphMathAtomMarkup(numerator)}</span><span class="math-den">${graphMathAtomMarkup(denominator)}</span></span>`;
+  }
+  return `${sign}${graphMathAtomMarkup(unsigned)}`;
+}
+
+function graphCoordinateMarkup(value) {
+  const match = String(value).match(/^\((.*), (.*)\)$/);
+  if (!match) return graphMathBodyMarkup(value);
+  return `<span class="math-coordinate"><span>(</span>${graphMathBodyMarkup(match[1])}<span>,</span>${graphMathBodyMarkup(match[2])}<span>)</span></span>`;
+}
+
 function setMathPosition(element, point, value) {
   const width = Number(element.getAttribute("width")) || 120;
   const height = Number(element.getAttribute("height")) || 46;
@@ -243,7 +290,31 @@ function setMathPosition(element, point, value) {
 
 function cleanNumber(value, digits = 3) {
   if (Math.abs(value) < 0.0005) return "0";
-  return value.toFixed(digits).replace(/\.?0+$/, "");
+  return value.toFixed(digits).replace(/\.?0+$/, "").replace("-", "−");
+}
+
+function greatestCommonDivisor(a, b) {
+  let x = Math.abs(a);
+  let y = Math.abs(b);
+  while (y) {
+    [x, y] = [y, x % y];
+  }
+  return x || 1;
+}
+
+function signedRadianLabel(angle, exact = false) {
+  if (!exact) return `≈ ${cleanNumber(angle / 180, 2)}π`;
+
+  const rounded = Math.round(angle);
+  if (rounded === 0) return "0";
+  const divisor = greatestCommonDivisor(rounded, 180);
+  const numerator = Math.abs(rounded / divisor);
+  const denominator = 180 / divisor;
+  const sign = rounded < 0 ? "−" : "";
+  const piTerm = numerator === 1 ? "π" : `${numerator}π`;
+  return denominator === 1
+    ? `${sign}${piTerm}`
+    : `${sign}${piTerm}/${denominator}`;
 }
 
 function anglePosition(angle) {
@@ -271,9 +342,11 @@ function anglePosition(angle) {
 
 function currentValues() {
   const roundedAngle = Math.round(state.angle);
+  const roundedSignedAngle = Math.round(state.signedAngle);
   const exact =
     allSpecialAngles.includes(roundedAngle) &&
     Math.abs(state.angle - roundedAngle) < 0.001 &&
+    Math.abs(state.signedAngle - roundedSignedAngle) < 0.001 &&
     exactValues[roundedAngle];
   const radians = (state.angle * Math.PI) / 180;
   const sin = Math.sin(radians);
@@ -284,7 +357,8 @@ function currentValues() {
   if (exact) {
     return {
       ...exact,
-      degree: `${roundedAngle}°`,
+      degree: `${cleanNumber(roundedSignedAngle, 1)}°`,
+      radian: signedRadianLabel(roundedSignedAngle, true),
       position,
       referenceDegree:
         position.reference === null
@@ -305,8 +379,8 @@ function currentValues() {
   const referenceRadians =
     position.reference === null ? null : (position.reference * Math.PI) / 180;
   return {
-    degree: `${cleanNumber(state.angle, 1)}°`,
-    radian: `≈ ${cleanNumber(state.angle / 180, 2)}π`,
+    degree: `${cleanNumber(state.signedAngle, 1)}°`,
+    radian: signedRadianLabel(state.signedAngle),
     coordinate: `(${cleanNumber(cos)}, ${cleanNumber(sin)})`,
     sin: cleanNumber(sin),
     cos: cleanNumber(cos),
@@ -495,8 +569,12 @@ function updateValues() {
   output.referenceDegree.textContent = values.referenceDegree;
   output.referenceRadian.innerHTML = mathMarkup(values.referenceRadian);
   output.coordinate.innerHTML = coordinateMarkup(values.coordinate);
-  graphCoordinateValue.innerHTML = coordinateMarkup(values.coordinate);
+  graphCoordinateValue.innerHTML = graphCoordinateMarkup(values.coordinate);
   angleValue.classList.toggle("show-radians", state.unitMode === "radians");
+  anglePositionPanel.classList.toggle(
+    "show-radians",
+    state.unitMode === "radians",
+  );
   ["sin", "cos", "tan", "csc", "sec", "cot"].forEach((key) => {
     output[key].innerHTML = mathMarkup(values[key]);
   });
@@ -533,6 +611,7 @@ function renderAngleButtons() {
       button.textContent = `${angle}°`;
       button.addEventListener("click", () => {
         state.angle = angle;
+        state.signedAngle = angle;
         statusText.textContent = `${angle}° — exact radical values`;
         render();
       });
@@ -557,14 +636,29 @@ triangleGroup.addEventListener("pointerdown", (event) => {
   state.pointerId = event.pointerId;
   triangleGroup.classList.add("is-dragging");
   triangleGroup.setPointerCapture(event.pointerId);
-  state.angle = snapAngle(angleFromPoint(point));
+  state.lastPointerAngle = angleFromPoint(point);
+  state.dragContinuousAngle = nearestEquivalentAngle(
+    state.lastPointerAngle,
+    state.signedAngle,
+  );
   render();
 });
 
 triangleGroup.addEventListener("pointermove", (event) => {
   if (!state.dragging || event.pointerId !== state.pointerId) return;
   const point = toSvgPoint(event);
-  state.angle = snapAngle(angleFromPoint(point));
+  const pointerAngle = angleFromPoint(point);
+  state.dragContinuousAngle += signedAngularDelta(
+    pointerAngle,
+    state.lastPointerAngle,
+  );
+  state.lastPointerAngle = pointerAngle;
+  const continuousNormalized = normalizeAngle(state.dragContinuousAngle);
+  state.angle = snapAngle(continuousNormalized);
+  state.signedAngle = nearestEquivalentAngle(
+    state.angle,
+    state.dragContinuousAngle,
+  );
   statusText.textContent = `Angle ${currentValues().degree}`;
   render();
 });
@@ -582,6 +676,7 @@ function finishDrag(event) {
   const activePointerId = state.pointerId;
   state.dragging = false;
   state.pointerId = null;
+  state.lastPointerAngle = null;
   triangleGroup.classList.remove("is-dragging");
 
   if (
@@ -616,12 +711,14 @@ document.addEventListener("visibilitychange", () => {
 triangleGroup.addEventListener("keydown", (event) => {
   if (event.key === "ArrowRight" || event.key === "ArrowUp") {
     event.preventDefault();
-    state.angle = (state.angle + 1) % 360;
+    state.signedAngle += 1;
+    state.angle = normalizeAngle(state.signedAngle);
     render();
   }
   if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
     event.preventDefault();
-    state.angle = (state.angle - 1 + 360) % 360;
+    state.signedAngle -= 1;
+    state.angle = normalizeAngle(state.signedAngle);
     render();
   }
 });

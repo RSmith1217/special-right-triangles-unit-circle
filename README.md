@@ -13,6 +13,7 @@ The prototype lets a student:
 - display radicals with a full vinculum and fractions in stacked form;
 - reach every quadrantal, 30°, 45°, and 60° special angle in one pass;
 - switch the circle and jump controls between degree and radian labels;
+- preserve clockwise direction as negative degree and radian angle measures;
 - track the quadrant and reference angle during exploration;
 - see the reference angle as a highlighted arc to the nearest x-axis;
 - connect signed leg lengths to `(cos θ, sin θ)`; and

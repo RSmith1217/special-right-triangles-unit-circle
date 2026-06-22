@@ -8,7 +8,7 @@
       content="Explore exact trigonometric values by dragging a 45-45-90 triangle into the unit circle."
     />
     <title>Unit Circle Explorer</title>
-    <link rel="stylesheet" href="styles.css?v=10" />
+    <link rel="stylesheet" href="styles.css?v=12" />
   </head>
   <body>
     <main class="app-shell">
@@ -98,16 +98,16 @@
             </g>
 
             <g id="graphCoordinatePanel" class="graph-coordinate-panel" aria-label="Current point coordinates">
-              <rect x="18" y="18" width="194" height="102" rx="14" />
+              <rect x="18" y="18" width="194" height="112" rx="14" />
               <text class="graph-coordinate-title" x="115" y="43">POINT</text>
-              <foreignObject x="29" y="48" width="172" height="46">
+              <foreignObject x="29" y="47" width="172" height="52">
                 <div
                   xmlns="http://www.w3.org/1999/xhtml"
                   id="graphCoordinateValue"
                   class="graph-coordinate-value"
                 ></div>
               </foreignObject>
-              <foreignObject x="49" y="94" width="132" height="22">
+              <foreignObject x="44" y="104" width="142" height="22">
                 <div xmlns="http://www.w3.org/1999/xhtml" class="graph-coordinate-identity">
                   <math>
                     <mrow>
@@ -155,7 +155,10 @@
           <div class="panel-actions">
             <div>
               <p class="panel-kicker">Explore the circle</p>
-              <p class="panel-instruction">Drag the blue point continuously.</p>
+              <p class="panel-instruction">
+                Drag counterclockwise for positive angles; cross 0° clockwise
+                to explore negative angles.
+              </p>
             </div>
           </div>
 
@@ -253,6 +256,6 @@
       </footer>
     </main>
 
-    <script src="app.js?v=10"></script>
+    <script src="app.js?v=12"></script>
   </body>
 </html>
