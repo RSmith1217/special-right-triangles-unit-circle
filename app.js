@@ -152,6 +152,12 @@ const exactCoordinateRenderCache = new Map();
 const exactCoordinateValues = new Set(
   Object.values(exactValues).map(({ coordinate }) => coordinate),
 );
+const exactAngleLatexValues = new Set(
+  allSpecialAngles.flatMap((angle) => [
+    latexBody(`${angle}°`),
+    latexBody(exactValues[angle].radian),
+  ]),
+);
 
 function toSvgPoint(event) {
   const point = svg.createSVGPoint();
@@ -318,6 +324,17 @@ async function preloadExactCoordinates() {
     renderGraphCoordinate(currentValues().coordinate);
   } catch {
     graphCoordinateValue.dataset.preloaded = "false";
+  }
+}
+
+async function preloadExactAngles() {
+  if (!window.MathJax?.startup?.promise) return;
+  try {
+    await Promise.all([...exactAngleLatexValues].map((latex) => latexNode(latex)));
+    angleValue.dataset.preloaded = "true";
+    updateValues();
+  } catch {
+    angleValue.dataset.preloaded = "false";
   }
 }
 
@@ -846,3 +863,4 @@ renderAngleButtons();
 buildSpecialPoints();
 render();
 void preloadExactCoordinates();
+void preloadExactAngles();

@@ -14,6 +14,7 @@ The prototype lets a student:
 - pre-render exact point coordinates so snap-point labels update immediately;
 - render approximate point coordinates with the same LaTeX typography;
 - render both current-angle measures with LaTeX in a fixed-height readout;
+- keep angle controls and readouts dimensionally stable across unit modes;
 - reach every quadrantal, 30°, 45°, and 60° special angle in one pass;
 - switch the circle and jump controls between degree and radian labels;
 - preserve clockwise direction as negative degree and radian angle measures;
