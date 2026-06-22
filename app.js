@@ -148,6 +148,10 @@ let graphTypesetTimer = null;
 let graphTypesetToken = 0;
 const latexRenderCache = new Map();
 const latexRenderTokens = new WeakMap();
+const exactCoordinateRenderCache = new Map();
+const exactCoordinateValues = new Set(
+  Object.values(exactValues).map(({ coordinate }) => coordinate),
+);
 
 function toSvgPoint(event) {
   const point = svg.createSVGPoint();
@@ -298,6 +302,22 @@ async function latexNode(latex) {
   return (await latexRenderCache.get(latex)).cloneNode(true);
 }
 
+async function preloadExactCoordinates() {
+  if (!window.MathJax?.startup?.promise) return;
+  try {
+    await Promise.all(
+      [...exactCoordinateValues].map(async (value) => {
+        const rendered = await latexNode(coordinateLatex(value));
+        exactCoordinateRenderCache.set(value, rendered);
+      }),
+    );
+    graphCoordinateValue.dataset.preloaded = "true";
+    renderGraphCoordinate(currentValues().coordinate);
+  } catch {
+    graphCoordinateValue.dataset.preloaded = "false";
+  }
+}
+
 async function renderLatex(element, latex, fallbackText) {
   const token = Symbol(latex);
   latexRenderTokens.set(element, token);
@@ -335,6 +355,14 @@ function renderMathValue(element, value, options = {}) {
 function renderGraphCoordinate(value) {
   const token = ++graphTypesetToken;
   window.clearTimeout(graphTypesetTimer);
+
+  const exactRendered = exactCoordinateRenderCache.get(value);
+  if (exactRendered) {
+    latexRenderTokens.delete(graphCoordinateValue);
+    graphCoordinateValue.replaceChildren(exactRendered.cloneNode(true));
+    return;
+  }
+
   graphTypesetTimer = window.setTimeout(async () => {
     if (!window.MathJax?.startup?.promise) {
       graphCoordinateValue.textContent = value;
@@ -354,7 +382,7 @@ function renderGraphCoordinate(value) {
         graphCoordinateValue.textContent = value;
       }
     }
-  }, state.dragging ? 70 : 0);
+  }, state.dragging && !exactCoordinateValues.has(value) ? 70 : 0);
 }
 
 function setMathPosition(element, point, value) {
@@ -803,3 +831,4 @@ triangleGroup.addEventListener("keydown", (event) => {
 renderAngleButtons();
 buildSpecialPoints();
 render();
+void preloadExactCoordinates();

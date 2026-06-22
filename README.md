@@ -11,6 +11,7 @@ The prototype lets a student:
   when the point snaps to a special angle;
 - snap to 0°, 90°, 180°, and 270° with exact axis values;
 - render radicals consistently from LaTeX with a full vinculum and stacked fractions;
+- pre-render exact point coordinates so snap-point labels update immediately;
 - reach every quadrantal, 30°, 45°, and 60° special angle in one pass;
 - switch the circle and jump controls between degree and radian labels;
 - preserve clockwise direction as negative degree and radian angle measures;
