@@ -769,6 +769,9 @@ h1 {
 }
 
 .coordinate-card {
+  display: grid;
+  grid-template-rows: auto 76px auto;
+  height: 176px;
   margin: 22px 0;
   padding: 19px;
   border: 1px solid #dfe6ee;
@@ -784,7 +787,10 @@ h1 {
 }
 
 .coordinate-value {
-  margin-bottom: 14px;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  margin-bottom: 0;
   font-family: Georgia, serif;
   font-size: clamp(1.45rem, 2vw, 2rem);
   font-weight: 700;
@@ -877,6 +883,7 @@ h1 {
 }
 
 .coordinate-key {
+  align-self: end;
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
