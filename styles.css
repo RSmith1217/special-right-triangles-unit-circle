@@ -707,6 +707,7 @@ h1 {
   display: grid;
   grid-template-columns: 0.8fr 1px 1.2fr;
   gap: 16px;
+  height: 72px;
   align-items: center;
   margin-top: 18px;
   padding: 14px 16px;
