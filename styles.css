@@ -1230,17 +1230,21 @@ h1 {
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
-  gap: 7px;
+  justify-content: center;
   margin-left: auto;
   margin-top: 4px;
-  padding: 9px 13px;
+  min-height: 46px;
+  padding: 0 22px;
   border: 1px solid #c8d5e6;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.72);
   color: var(--blue-dark);
-  font-size: 0.76rem;
-  font-weight: 850;
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .dydx-link:hover {
@@ -1313,6 +1317,14 @@ h1 {
   }
 
   .intro {
+    white-space: normal;
+  }
+
+  .dydx-link {
+    max-width: 100%;
+    min-height: 44px;
+    padding: 0 18px;
+    font-size: 0.72rem;
     white-space: normal;
   }
 
